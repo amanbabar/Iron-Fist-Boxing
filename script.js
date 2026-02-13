@@ -128,6 +128,66 @@
     }
   }
 
+  function initReviewsCarousel(carousel) {
+    const viewport = carousel.querySelector(".reviews-viewport");
+    const track = carousel.querySelector(".reviews-track");
+    const cards = track ? Array.from(track.querySelectorAll(".review-card")) : [];
+    if (!viewport || !track || cards.length <= 1) return;
+
+    const prevBtn = carousel.querySelector(".reviews-btn.prev");
+    const nextBtn = carousel.querySelector(".reviews-btn.next");
+
+    let index = 0;
+    let cardStep = 0;
+    let maxIndex = 0;
+    let pointerStartX = null;
+
+    const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
+
+    const recalc = () => {
+      const first = cards[0];
+      const cs = window.getComputedStyle(track);
+      const gap = parseFloat(cs.columnGap || cs.gap || "0") || 0;
+      cardStep = (first ? first.getBoundingClientRect().width : 0) + gap;
+      const maxTranslate = Math.max(0, track.scrollWidth - viewport.clientWidth);
+      maxIndex = cardStep > 0 ? Math.ceil(maxTranslate / cardStep) : 0;
+      index = clamp(index, 0, maxIndex);
+      apply();
+    };
+
+    const apply = () => {
+      const maxTranslate = Math.max(0, track.scrollWidth - viewport.clientWidth);
+      const x = clamp(index * cardStep, 0, maxTranslate);
+      track.style.transform = `translateX(-${x}px)`;
+      if (prevBtn) prevBtn.disabled = index <= 0;
+      if (nextBtn) nextBtn.disabled = index >= maxIndex;
+    };
+
+    const go = (delta) => {
+      index = clamp(index + delta, 0, maxIndex);
+      apply();
+    };
+
+    if (prevBtn) prevBtn.addEventListener("click", () => go(-1));
+    if (nextBtn) nextBtn.addEventListener("click", () => go(1));
+
+    viewport.addEventListener("pointerdown", (e) => {
+      pointerStartX = e.clientX;
+    });
+
+    viewport.addEventListener("pointerup", (e) => {
+      if (pointerStartX === null) return;
+      const dx = e.clientX - pointerStartX;
+      pointerStartX = null;
+      if (Math.abs(dx) < 40) return;
+      if (dx > 0) go(-1);
+      else go(1);
+    });
+
+    window.addEventListener("resize", recalc);
+    recalc();
+  }
+
   window.addEventListener("DOMContentLoaded", () => {
     const navbar = document.querySelector(".navbar");
     const navToggle = navbar ? navbar.querySelector(".nav-toggle") : null;
@@ -167,6 +227,7 @@
     }
 
     document.querySelectorAll(".slider").forEach(initSlider);
+    document.querySelectorAll("[data-reviews-carousel]").forEach(initReviewsCarousel);
     const hero = document.querySelector(".hero");
     const heroImg = hero ? hero.querySelector(".bg-video") : null;
     if (hero && heroImg) {
