@@ -129,6 +129,43 @@
   }
 
   window.addEventListener("DOMContentLoaded", () => {
+    const navbar = document.querySelector(".navbar");
+    const navToggle = navbar ? navbar.querySelector(".nav-toggle") : null;
+    const navList = document.getElementById("site-nav");
+
+    if (navbar && navToggle && navList) {
+      const closeMenu = () => {
+        navbar.classList.remove("nav-open");
+        navToggle.setAttribute("aria-expanded", "false");
+      };
+
+      const openMenu = () => {
+        navbar.classList.add("nav-open");
+        navToggle.setAttribute("aria-expanded", "true");
+      };
+
+      navToggle.addEventListener("click", () => {
+        const isOpen = navbar.classList.contains("nav-open");
+        if (isOpen) closeMenu();
+        else openMenu();
+      });
+
+      navList.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", closeMenu);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!navbar.classList.contains("nav-open")) return;
+        if (!(e.target instanceof Node)) return;
+        if (navbar.contains(e.target)) return;
+        closeMenu();
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 768) closeMenu();
+      });
+    }
+
     document.querySelectorAll(".slider").forEach(initSlider);
     const hero = document.querySelector(".hero");
     const heroImg = hero ? hero.querySelector(".bg-video") : null;
