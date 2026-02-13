@@ -146,9 +146,11 @@
 
     const recalc = () => {
       const first = cards[0];
-      const cs = window.getComputedStyle(track);
-      const gap = parseFloat(cs.columnGap || cs.gap || "0") || 0;
-      cardStep = (first ? first.getBoundingClientRect().width : 0) + gap;
+      const second = cards[1] || null;
+      const fallbackWidth = first ? first.getBoundingClientRect().width : 0;
+      const offsetStep =
+        first && second ? Math.max(0, second.offsetLeft - first.offsetLeft) : 0;
+      cardStep = offsetStep || fallbackWidth;
       const maxTranslate = Math.max(0, track.scrollWidth - viewport.clientWidth);
       maxIndex = cardStep > 0 ? Math.ceil(maxTranslate / cardStep) : 0;
       index = clamp(index, 0, maxIndex);

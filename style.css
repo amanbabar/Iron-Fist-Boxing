@@ -366,6 +366,7 @@ body {
     position: relative;
     width: min(1100px, 100%);
     margin: 0 auto;
+    padding: 0 56px;
 }
 
 .reviews-viewport {
@@ -467,11 +468,11 @@ body {
 }
 
 .reviews-btn.prev {
-    left: -8px;
+    left: 0;
 }
 
 .reviews-btn.next {
-    right: -8px;
+    right: 0;
 }
 
 .reviews-btn[disabled] {
@@ -633,11 +634,15 @@ body {
     }
 
     .reviews-btn.prev {
-        left: -4px;
+        left: 0;
     }
 
     .reviews-btn.next {
-        right: -4px;
+        right: 0;
+    }
+
+    .reviews-carousel {
+        padding: 0 46px;
     }
 
     .review-card {
